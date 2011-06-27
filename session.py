@@ -7,9 +7,13 @@ class Session:
 
     class __impl:
         players = []
+        local_player = None
 
         def spam(self):
             return id(self)
+
+        def set_local_player(self, nick):
+            self.local_player = nick
 
         def create_player(self, nick):
             player = Player(name=nick, position=(400, 300))

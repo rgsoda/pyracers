@@ -33,11 +33,10 @@ class PyRacerProto(LineReceiver):
             if msg.get('status') == 'pos_update':
                 self.message_others(message)
             if msg.get('command') == 'get_players':
-                data = {'status': 'players', 'players': self.factory.players}
-                print json.dumps(data)
+                data = {'status': 'players', 'players': self.factory.users}
                 self.sendLine(json.dumps(data))
-        except Exception:
-            pass
+        except Exception, e:
+            print e
 
 
 class ServerFactory(Factory):

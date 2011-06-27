@@ -31,7 +31,7 @@ def game_init(host=None, port=None, nickname=None):
 
     player = Player('car.png', rect.center, nickname)
     session.append_player(player)
-
+    session.set_local_player(nickname)
 
     def _loop():
         player_group = pygame.sprite.RenderPlain(session.get_players())

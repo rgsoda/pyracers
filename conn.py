@@ -27,7 +27,8 @@ class ChatClient(LineReceiver):
             msg = json.loads(message)
             if msg.get('status') == 'players':
                 for nick in msg.get('players'):
-                    self.session.create_player(nick)
+                    if nick != self.session.local_player:
+                        self.session.create_player(nick)
             if msg.get('status') == 'connected':
                 nick = msg.get('name')
                 self.session.create_player(nick)
