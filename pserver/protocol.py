@@ -25,18 +25,19 @@ class PyRacerProto(LineReceiver):
 
     def parse_message(self, message):
         msg = None
-        try:
-            msg = json.loads(message)
-            if msg.get('status') == 'connected':
-                self.factory.users.append(msg.get('name'))
-                self.message_others(message)
-            if msg.get('status') == 'pos_update':
-                self.message_others(message)
-            if msg.get('command') == 'get_players':
-                data = {'status': 'players', 'players': self.factory.users}
-                self.sendLine(json.dumps(data))
-        except Exception, e:
-            print e
+        if message:
+            try:
+                msg = json.loads(message)
+                if msg.get('status') == 'connected':
+                    self.factory.users.append(msg.get('name'))
+                    self.message_others(message)
+                if msg.get('status') == 'pos_update':
+                    self.message_others(message)
+                if msg.get('command') == 'get_players':
+                    data = {'status': 'players', 'players': self.factory.users}
+                    self.sendLine(json.dumps(data))
+            except Exception, e:
+                print e
 
 
 class ServerFactory(Factory):

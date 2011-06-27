@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
             image = 'car.png'
         pygame.sprite.Sprite.__init__(self)
         self.src_image = pygame.image.load(os.path.join('assets', image))
+        self.rect = self.src_image.get_rect()
         self.position = position
         self.speed = self.direction = 0
         self.k_left = self.k_right = self.k_down = self.k_up = 0
