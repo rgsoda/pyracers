@@ -7,8 +7,8 @@ import os
 
 
 class Player(pygame.sprite.Sprite):
-    MAX_FORWARD_SPEED = 4
-    MAX_REVERSE_SPEED = 2
+    MAX_FORWARD_SPEED = 8
+    MAX_REVERSE_SPEED = 0.2
     ACCELERATION = 0.01
     TURN_SPEED = 0.01
 

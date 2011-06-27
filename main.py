@@ -10,7 +10,6 @@ from player import Player
 from session import Session
 from conn import ChatFactory
 from twisted.internet import reactor
-from pygame import sprite
 from pygame.locals import *
 
 PORT = 9234
@@ -53,14 +52,14 @@ def game_init(host=None, port=None, nickname=None):
 
             if event.key == K_RIGHT:
                 player.k_right = down * -5
-                player.k_down = down * - 0.02
+                player.k_down = down * - 0.12
             elif event.key == K_LEFT:
                 player.k_left = down * 5
-                player.k_down = down * - 0.02
+                player.k_down = down * - 0.12
             elif event.key == K_UP:
-                player.k_up = down * 2
+                player.k_up = down * 0.2
             elif event.key == K_DOWN:
-                player.k_down = down * -2
+                player.k_down = down * -0.4
             elif event.key == K_ESCAPE:
                 status = {'status': 'disconnected', 'name': player.name}
                 serverClient.sendMessage(json.dumps(status))
