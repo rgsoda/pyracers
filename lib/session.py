@@ -71,10 +71,3 @@ class Session:
 
     def __setattr__(self, attr, value):
         return setattr(self.__instance, attr, value)
-
-
-def contains(list, filter):
-    for x in list:
-        if filter(x):
-            return True
-    return False
