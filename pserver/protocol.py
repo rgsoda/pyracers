@@ -10,18 +10,25 @@ import json
 class PyRacerProto(LineReceiver):
 
     def connectionMade(self):
-        self.factory.clients.append(self)
+        pass
 
     def connectionLost(self, reason):
-        self.factory.clients.remove(self)
+        for c in self.factory.clients:
+            if c['client'] == self:
+                self.factory.clients.remove(c)
 
     def lineReceived(self, data):
         self.parse_message(data)
 
     def message_others(self, data):
         for c in self.factory.clients:
-            if c != self:
-                c.sendLine(data)
+            if c['client'] != self:
+                c['client'].sendLine(data)
+
+    def get_usernames(self):
+        usernames = []
+        for c in self.factory.clients:
+            usernames.append(c['name'])
 
     def parse_message(self, message):
         msg = None
@@ -30,17 +37,19 @@ class PyRacerProto(LineReceiver):
                 msg = json.loads(message)
                 if msg.get('status') == 'connected':
                     print msg
-                    self.factory.users.append(msg.get('name'))
+                    name = msg.get('name')
                     self.message_others(message)
+                    self.factory.clients.append({'name': name, 'client': self})
                 if msg.get('status') == 'disconnected':
-                    print msg
-                    self.factory.users.append(msg.get('name'))
                     self.message_others(message)
                 if msg.get('status') == 'pos_update':
                     self.message_others(message)
                 if msg.get('command') == 'get_players':
                     print msg
-                    data = {'status': 'players', 'players': self.factory.users}
+                    data = {
+                        'status': 'players',
+                        'players': self.get_usernames(),
+                    }
                     self.sendLine(json.dumps(data))
             except Exception, e:
                 print e
@@ -52,7 +61,6 @@ class ServerFactory(Factory):
 
     def __init__(self):
         self.clients = []
-        self.users = []
 
 
 if __name__ == '__main__':

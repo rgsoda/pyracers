@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from lib.player import Player
-import copy
 
 
 class Session:
 
     class __impl:
-        players = []
+        players = {}
         local_player = None
         ready = False
         scroll_group = None
@@ -28,44 +27,35 @@ class Session:
             return self.ready
 
         def create_player(self, nick):
-            if not contains(self.players, lambda x: x.name == nick):
+            if not nick in self.players:
                 print "Creating user %s" % nick
                 player = Player(name=nick, position=(400, 300))
-                self.players.append(player)
+                self.players[nick] = player
                 self.scroll_group.add(player)
                 return player
             else:
                 print "NOT Creating user %s" % nick
 
         def remove_player(self, nick):
-            p = self.get_player(nick)
-            self.player.remove(p)
-            self.scroll_group.remove(p)
+            p = self.players.get(nick, None)
+            if p:
+                del self.players[nick]
+                self.scroll_group.remove(p)
 
         def update_player(self, nick, position, direction):
-            for p in self.players:
-                if p.name == nick:
-                    p.position = position
-                    p.direction = direction
+            p = self.players.get(nick, None)
+            if p:
+                p.position = position
+                p.direction = direction
 
         def get_player_names(self):
-            names = []
-            for p in self.players:
-                names.append(p.name)
-            return names
-
-        def player_exists(self, name):
-            return contains(self.players, lambda x: x.name == name)
+            return self.players.keys()
 
         def get_players(self):
-            return self.players
+            return self.players.values()
 
-        def get_player(self, name):
-            for p in self.players:
-                if p.name == name:
-                    return p
-            return None
-
+        def player_exists(self, name):
+            return name in self.players
 
     __instance = None
 

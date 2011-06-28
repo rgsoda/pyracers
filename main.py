@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# INTIALISATION
 import pygame
 import sys
 import os
@@ -16,7 +15,7 @@ from twisted.internet import reactor
 from pygame.locals import *
 
 PORT = 9234
-FPS = 60
+FPS = 90
 RES = (800, 600)
 
 
@@ -58,7 +57,6 @@ def game_init(host=None, port=None, nickname=None):
 
         serverClient.sendMessage(player.get_status())
         clock.tick(FPS)
-
         for p in session.get_players():
             if p != player:
                 if pygame.sprite.collide_rect(player, p):
@@ -68,7 +66,6 @@ def game_init(host=None, port=None, nickname=None):
             if not hasattr(event, 'key'):
                 continue
             down = event.type == KEYDOWN
-            print player.speed
             if event.key == K_RIGHT:
                 player.k_right = down * -5
                 player.k_down = down * -0.2
@@ -86,13 +83,13 @@ def game_init(host=None, port=None, nickname=None):
                 pygame.quit()
                 sys.exit(0)
 
+
         bgManager.NotifyPlayerSpritePos(player.rect)
 
         local_group.clear(screen)
         local_group.update()
         changedRects = local_group.draw(screen)
         pygame.display.update(changedRects)
-
         reactor.callLater(1. / FPS, _loop)
 
     status = {'status': 'connected', 'name': nickname}

@@ -4,6 +4,7 @@ import pygame
 import math
 import json
 import os
+# from lib.subpixelsurface import SubPixelSurface
 
 
 class Player(pygame.sprite.Sprite):
@@ -20,6 +21,8 @@ class Player(pygame.sprite.Sprite):
             image = 'car.png'
         pygame.sprite.Sprite.__init__(self)
         self.sprite_image = pygame.image.load(os.path.join('assets', image))
+        # self.sprite_image_subpixel = SubPixelSurface(
+        #     self.sprite_image, x_level=4)
         self.rect = self.sprite_image.get_rect()
         self.position = position
         self.speed = self.direction = 0
