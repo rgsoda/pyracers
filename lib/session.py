@@ -42,9 +42,10 @@ class Session:
                 del self.players[nick]
                 self.scroll_group.remove(p)
 
-        def update_player(self, nick, position, direction):
+        def update_player(self, nick, position, speed, direction):
             p = self.players.get(nick, None)
             if p:
+                p.speed = speed
                 p.position = position
                 p.direction = direction
 
