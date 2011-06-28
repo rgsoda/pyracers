@@ -39,6 +39,7 @@ def game_init(host=None, port=None, nickname=None):
     print session.players
     print "checking in session about player %s" % nickname
     print "player exists: %s" % session.player_exists(nickname)
+
     if session.player_exists(nickname):
         sys.exit(0)
 
@@ -57,6 +58,11 @@ def game_init(host=None, port=None, nickname=None):
 
         serverClient.sendMessage(player.get_status())
         clock.tick(FPS)
+
+        for p in session.get_players():
+            if p != player:
+                if pygame.sprite.collide_rect(player, p):
+                    player.speed = 0
 
         for event in pygame.event.get():
             if not hasattr(event, 'key'):
@@ -77,6 +83,7 @@ def game_init(host=None, port=None, nickname=None):
                 status = {'status': 'disconnected', 'name': player.name}
                 serverClient.sendMessage(json.dumps(status))
                 reactor.stop()
+                pygame.quit()
                 sys.exit(0)
 
         bgManager.NotifyPlayerSpritePos(player.rect)
@@ -104,5 +111,8 @@ if __name__ == '__main__':
         usage()
     else:
         host, nickname = sys.argv[1], sys.argv[2]
-        game_init(host=host, port=PORT, nickname=nickname)
-        reactor.run()
+        try:
+            game_init(host=host, port=PORT, nickname=nickname)
+            reactor.run()
+        except SystemExit:
+            pass

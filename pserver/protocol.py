@@ -29,11 +29,17 @@ class PyRacerProto(LineReceiver):
             try:
                 msg = json.loads(message)
                 if msg.get('status') == 'connected':
+                    print msg
+                    self.factory.users.append(msg.get('name'))
+                    self.message_others(message)
+                if msg.get('status') == 'disconnected':
+                    print msg
                     self.factory.users.append(msg.get('name'))
                     self.message_others(message)
                 if msg.get('status') == 'pos_update':
                     self.message_others(message)
                 if msg.get('command') == 'get_players':
+                    print msg
                     data = {'status': 'players', 'players': self.factory.users}
                     self.sendLine(json.dumps(data))
             except Exception, e:

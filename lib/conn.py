@@ -19,7 +19,7 @@ class ChatClient(LineReceiver):
         self.parse_message(line)
 
     def connectionLost(self, reason):
-        reactor.stop()
+        pass
 
     def parse_message(self, message):
         msg = None
@@ -32,6 +32,9 @@ class ChatClient(LineReceiver):
             if msg.get('status') == 'connected':
                 nick = msg.get('name')
                 self.session.create_player(nick)
+            if msg.get('status') == 'disconnected':
+                nick = msg.get('name')
+                self.session.remove_player(nick)
             if msg.get('status') == 'pos_update':
                 pos = msg.get('pos')
                 nick = msg.get('name')
@@ -52,8 +55,7 @@ class ChatFactory(ClientFactory):
         reactor.stop()
 
     def clientConnectionLost(self, connector, reason):
-        reactor.stop()
-        print reason
+        pass
 
     def startFactory(self):
         self.messageQueue = []

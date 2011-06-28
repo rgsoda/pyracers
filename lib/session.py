@@ -37,6 +37,11 @@ class Session:
             else:
                 print "NOT Creating user %s" % nick
 
+        def remove_player(self, nick):
+            p = self.get_player(nick)
+            self.player.remove(p)
+            self.scroll_group.remove(p)
+
         def update_player(self, nick, position, direction):
             for p in self.players:
                 if p.name == nick:
@@ -54,6 +59,13 @@ class Session:
 
         def get_players(self):
             return self.players
+
+        def get_player(self, name):
+            for p in self.players:
+                if p.name == name:
+                    return p
+            return None
+
 
     __instance = None
 
