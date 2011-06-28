@@ -38,9 +38,12 @@ class ChatClient(LineReceiver):
             if msg.get('status') == 'pos_update':
                 pos = msg.get('pos')
                 nick = msg.get('name')
+                speed = msg.get('speed')
                 direction = msg.get('direction')
                 self.session.update_player(nick=nick,
-                                           position=pos, direction=direction)
+                                           position=pos,
+                                           speed=speed,
+                                           direction=direction)
         except Exception:
             pass
 

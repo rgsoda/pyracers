@@ -50,6 +50,7 @@ class Player(pygame.sprite.Sprite):
         status = {
             'status': "pos_update",
             'pos': self.position,
+            'speed': self.speed,
             'direction': self.direction,
             'name': self.name
         }
