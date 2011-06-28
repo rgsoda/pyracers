@@ -5,6 +5,7 @@ import pygame
 import sys
 import os
 import json
+import time
 
 from lib.session import Session
 from lib.conn import ChatFactory
@@ -15,7 +16,7 @@ from twisted.internet import reactor
 from pygame.locals import *
 
 PORT = 9234
-FPS = 90
+FPS = 60
 RES = (800, 600)
 
 
@@ -79,10 +80,9 @@ def game_init(host=None, port=None, nickname=None):
             elif event.key == K_ESCAPE:
                 status = {'status': 'disconnected', 'name': player.name}
                 serverClient.sendMessage(json.dumps(status))
-                reactor.stop()
+                # reactor.stop()
                 pygame.quit()
                 sys.exit(0)
-
 
         bgManager.NotifyPlayerSpritePos(player.rect)
 

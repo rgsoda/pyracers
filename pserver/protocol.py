@@ -13,22 +13,20 @@ class PyRacerProto(LineReceiver):
         pass
 
     def connectionLost(self, reason):
-        for c in self.factory.clients:
-            if c['client'] == self:
-                self.factory.clients.remove(c)
+        for k, v in self.factory.clients.items():
+            if v == self:
+                del self.factory.clients[k]
 
     def lineReceived(self, data):
         self.parse_message(data)
 
     def message_others(self, data):
-        for c in self.factory.clients:
-            if c['client'] != self:
-                c['client'].sendLine(data)
+        for k, v in self.factory.clients.items():
+            if v != self:
+                v.sendLine(data)
 
     def get_usernames(self):
-        usernames = []
-        for c in self.factory.clients:
-            usernames.append(c['name'])
+        return self.factory.clients.keys()
 
     def parse_message(self, message):
         msg = None
@@ -39,9 +37,10 @@ class PyRacerProto(LineReceiver):
                     print msg
                     name = msg.get('name')
                     self.message_others(message)
-                    self.factory.clients.append({'name': name, 'client': self})
+                    self.factory.clients[name] = self
                 if msg.get('status') == 'disconnected':
                     self.message_others(message)
+
                 if msg.get('status') == 'pos_update':
                     self.message_others(message)
                 if msg.get('command') == 'get_players':
@@ -60,7 +59,7 @@ class ServerFactory(Factory):
     protocol = PyRacerProto
 
     def __init__(self):
-        self.clients = []
+        self.clients = {}
 
 
 if __name__ == '__main__':
