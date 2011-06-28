@@ -6,56 +6,69 @@ import pygame
 import sys
 import os
 import json
-from player import Player
-from session import Session
-from conn import ChatFactory
+
+from lib.session import Session
+from lib.conn import ChatFactory
+import lib.scroll_bgmanager as scroll_bgmanager
+import lib.scroll_group as scroll_group
+
 from twisted.internet import reactor
 from pygame.locals import *
 
 PORT = 9234
-FPS = 45
+FPS = 60
+RES = (800, 600)
 
 
 def game_init(host=None, port=None, nickname=None):
-
-    background = pygame.image.load(os.path.join('assets', 'track.jpg'))
-    size = (width, height) = background.get_size()
-    screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
+
+    background = pygame.image.load(os.path.join('assets', 'montreal.jpg'))
+    screen = pygame.display.set_mode(RES)
+
+    bgManager = scroll_bgmanager.BackgroundManager(screen, background)
 
     session = Session()
 
     serverClient = ChatFactory()
     reactor.connectTCP(host, port, serverClient)
-    rect = screen.get_rect()
 
-    player = Player('car.png', rect.center, nickname)
-    session.append_player(player)
-    session.set_local_player(nickname)
+    get_players = {'command': 'get_players'}
+    serverClient.sendMessage(json.dumps(get_players))
+
+    print session.players
+    print "checking in session about player %s" % nickname
+    print "player exists: %s" % session.player_exists(nickname)
+    if session.player_exists(nickname):
+        sys.exit(0)
+
+    local_group = scroll_group.ScrollSpriteGroup(bgManager)
+    session.set_scroll_group(local_group)
+
+    player = session.create_player(nickname)
+    session.set_local_player(player)
+
+    local_group.add(player)
+
+    bgManager.BlitSelf(screen)
+    pygame.display.flip()
 
     def _loop():
-        player_group = pygame.sprite.RenderPlain(session.get_players())
 
         serverClient.sendMessage(player.get_status())
-        deltat = clock.tick(FPS)
-
-        for p in session.get_players():
-            if p != player:
-                if pygame.sprite.collide_rect(player, p):
-                    player.speed = 0
+        clock.tick(FPS)
 
         for event in pygame.event.get():
-
             if not hasattr(event, 'key'):
                 continue
             down = event.type == KEYDOWN
-
+            print player.speed
             if event.key == K_RIGHT:
                 player.k_right = down * -5
-                player.k_down = down * - 0.12
+                player.k_down = down * -0.2
             elif event.key == K_LEFT:
                 player.k_left = down * 5
-                player.k_down = down * - 0.12
+                player.k_down = down * -0.2
             elif event.key == K_UP:
                 player.k_up = down * 0.2
             elif event.key == K_DOWN:
@@ -65,17 +78,18 @@ def game_init(host=None, port=None, nickname=None):
                 serverClient.sendMessage(json.dumps(status))
                 reactor.stop()
                 sys.exit(0)
-        screen.blit(background, background.get_rect())
-        player_group.update(deltat)
-        player_group.draw(screen)
-        pygame.display.flip()
+
+        bgManager.NotifyPlayerSpritePos(player.rect)
+
+        local_group.clear(screen)
+        local_group.update()
+        changedRects = local_group.draw(screen)
+        pygame.display.update(changedRects)
+
         reactor.callLater(1. / FPS, _loop)
 
     status = {'status': 'connected', 'name': nickname}
     serverClient.sendMessage(json.dumps(status))
-
-    get_players = {'command': 'get_players'}
-    serverClient.sendMessage(json.dumps(get_players))
 
     _loop()
 
