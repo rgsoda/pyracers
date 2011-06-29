@@ -36,7 +36,7 @@ def game_init(host=None, port=None, nickname=None):
     get_players = {'command': 'get_players'}
     # serverClient.sendMessage(json.dumps(get_players))
 
-    port.write(json.dumps(get_players), ('127.0.0.1', PORT))
+    port.write(json.dumps(get_players), (host, PORT))
     print session.players
     print "checking in session about player %s" % nickname
     print "player exists: %s" % session.player_exists(nickname)
