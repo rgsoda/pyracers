@@ -33,6 +33,7 @@ class ServerClient(DatagramProtocol):
         try:
             msg = json.loads(message)
             if msg.get('status') == 'players':
+                print msg
                 for nick in msg.get('players'):
                     self.session.create_player(nick)
                 self.session.set_session_ready(True)

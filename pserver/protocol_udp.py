@@ -19,6 +19,12 @@ class Echo(DatagramProtocol):
             if dest != sender_dest:
                 self.transport.write(data, dest)
 
+    def remove_player(self, name):
+        del self.clients[name]
+
+    def get_usernames(self):
+        return self.clients.keys()
+
     def parse_message(self, message, dest):
         msg = None
         if message:
@@ -30,6 +36,7 @@ class Echo(DatagramProtocol):
                     self.message_others(message, dest)
                     self.clients[name] = dest
                 if msg.get('status') == 'disconnected':
+                    self.remove_player(msg.get('name'))
                     self.message_others(message, dest)
 
                 if msg.get('status') == 'pos_update':
