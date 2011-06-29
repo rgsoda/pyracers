@@ -10,8 +10,8 @@ import os
 class Player(pygame.sprite.Sprite):
     MAX_FORWARD_SPEED = 15
     MAX_REVERSE_SPEED = 0.2
-    ACCELERATION = 0.22
-    TURN_SPEED = 1.2
+    ACCELERATION = 0.02
+    TURN_SPEED = 0.02
 
     def __repr__(self):
         return "Player %s pos: %s" % (self.name, self.position)

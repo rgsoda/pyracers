@@ -5,10 +5,10 @@ import pygame
 import sys
 import os
 import json
-import time
 
 from lib.session import Session
-from lib.conn import ChatFactory
+# from lib.conn import ChatFactory
+from lib.conn_udp import ServerClient
 import lib.scroll_bgmanager as scroll_bgmanager
 import lib.scroll_group as scroll_group
 
@@ -30,12 +30,13 @@ def game_init(host=None, port=None, nickname=None):
 
     session = Session()
 
-    serverClient = ChatFactory()
-    reactor.connectTCP(host, port, serverClient)
+    # serverClient = ServerClient()
+    port = reactor.listenUDP(0, ServerClient(host, PORT))
 
     get_players = {'command': 'get_players'}
-    serverClient.sendMessage(json.dumps(get_players))
+    # serverClient.sendMessage(json.dumps(get_players))
 
+    port.write(json.dumps(get_players), ('127.0.0.1', PORT))
     print session.players
     print "checking in session about player %s" % nickname
     print "player exists: %s" % session.player_exists(nickname)
@@ -56,7 +57,8 @@ def game_init(host=None, port=None, nickname=None):
 
     def _loop():
 
-        serverClient.sendMessage(player.get_status())
+        # serverClient.sendMessage(player.get_status())
+        port.write(player.get_status())
         clock.tick(FPS)
         for p in session.get_players():
             if p != player:
@@ -79,7 +81,8 @@ def game_init(host=None, port=None, nickname=None):
                 player.k_down = down * -0.4
             elif event.key == K_ESCAPE:
                 status = {'status': 'disconnected', 'name': player.name}
-                serverClient.sendMessage(json.dumps(status))
+                # serverClient.sendMessage(json.dumps(status))
+                port.write(json.dumps(status))
                 # reactor.stop()
                 pygame.quit()
                 sys.exit(0)
@@ -93,8 +96,8 @@ def game_init(host=None, port=None, nickname=None):
         reactor.callLater(1. / FPS, _loop)
 
     status = {'status': 'connected', 'name': nickname}
-    serverClient.sendMessage(json.dumps(status))
-
+    # serverClient.sendMessage(json.dumps(status))
+    port.write(json.dumps(status))
     _loop()
 
 
